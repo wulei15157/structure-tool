@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Grunt",
   "version": "1.0.0",
   "description": "- Grunt介绍",
@@ -14,7 +14,7 @@
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-cssmin": "^4.0.0",
     "grunt-contrib-jshint": "^3.0.0",
-    "grunt-contrib-uglify": "^5.0.0"
+    "grunt-contrib-uglify": "^5.0.0",
   },
   "dependencies": {
     "bootstrap": "^4.6.0",
