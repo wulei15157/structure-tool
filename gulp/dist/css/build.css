@@ -1,0 +1,23 @@
+.wulei {
+  width: 150px;
+  height: 150px;
+  font-size: 12px;
+  background: red;
+  color: red;
+  position: relative;
+}
+div {
+  background: grey;
+  color: red;
+  font-size: 12px;
+}
+
+.wulei{color:red;background: blue}
+.xiaowu{ border-color: red; background: red}
+#div {
+  width: 100px;
+  height: 100px;
+  background: red;
+  font-size: 12px;
+  font-family: '\5B8B\4F53';
+  color: black; }

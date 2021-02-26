@@ -1,52 +1,354 @@
-# 2. 使用github
+1.Gulp入门介绍：
 
-## 2.1 目的
+```
+* Gulp介绍
+  * 中文主页: http://www.gulpjs.com.cn/
+  * gulp是与grunt功能类似的**前端项目构建**工具, 也是基于Nodejs的自动**任务运行器**
+  * 能自动化地完成 javascript/coffee/sass/less/html/image/css 等文件的
+    合并、压缩、检查、监听文件变化、浏览器自动刷新、测试等任务
+  * gulp更高效(异步多任务), 更易于使用, 插件高质量
+* 安装 nodejs, 查看版本: node -v
+* 创建一个简单的应用gulp_test
+```
+  |- dist
+  |- src
+    |- js
+    |- css
+    |- less
+  |- index.html
+  |- gulpfile.js-----gulp配置文件
+  |- package.json
+    {
+      "name": "gulp_test",
+      "version": "1.0.0"
+    } 
+  ```
+* 安装gulp:
+  * 全局安装gulp
+  ```
+    npm install gulp -g
+    ```
+  * 局部安装gulp
+    ```
+    npm install gulp --save-dev
+    ```
+  * 配置编码: gulpfile.js
+    ```
+    //引入gulp模块
+    var gulp = require('gulp');
+    //定义默认任务
+    gulp.task('任务名', function() {
+      // 将你的任务的任务代码放在这
+    });
+    gulp.task('default', ['任务'])//异步执行
+    ```
+  * 构建命令: 
+    ```
+    gulp
+    ```
+* 使用gulp插件
+  * 相关插件:
+    * gulp-concat : 合并文件(js/css)
+    * gulp-bable:es5 es6转换
+    * gulp-uglify : 压缩js文件
+    * gulp-rename : 文件重命名
+    * gulp-less : 编译less
+    * gulp-clean-css : 压缩css
+    * gulp-livereload : 实时自动编译刷新
+  * 重要API
+    * gulp.src(filePath/pathArr) : 
+      * 指向指定路径的所有文件, 返回文件流对象
+      * 用于读取文件
+    * gulp.dest(dirPath/pathArr)
+      * 指向指定的所有文件夹
+      * 用于向文件夹中输出文件
+    * gulp.task(name, [deps], fn) 
+      * 定义一个任务
+    * gulp.watch() 
+      * 监视文件的变化
+  * 处理js
+    * 创建js文件
+      * src/js/test1.js
+        ```
+        (function () {
+          function add(num1, num2) {
+            var num3 = 0;
+            num1 = num2 + num3;
+            return num1 + num2;
+          }
+          console.log(add(10, 30));
+        })();
+        ```
+      * src/js/test2.js
+        ```
+        (function () {
+          var arr = [2,3,4].map(function (item, index) {
+              return item+1;
+          });
+          console.log(arr);
+        })();
+        ```
+    * 下载插件:
+      ```
+      npm install gulp-concat gulp-uglify gulp-rename --save-dev
+      ```
+    * 配置编码
+      ```
+      var concat = require('gulp-concat');
+      var uglify = require('gulp-uglify');
+      var rename = require('gulp-rename');
+      
+      gulp.task('minifyjs', function() {
+          return gulp.src('src/js/*.js') //操作的源文件
+              .pipe(concat('built.js')) //合并到临时文件     
+              .pipe(gulp.dest('dist/js')) //生成到目标文件夹
+              .pipe(rename({suffix: '.min'})) //重命名  
+              .pipe(uglify())    //压缩
+              .pipe(gulp.dest('dist/js'));
+      });
+      
+      gulp.task('default', ['minifyjs']);
+      ```
+    * 页面引入js浏览测试 : index.html
+      ```
+      <script type="text/javascript" src="dist/js/built.min.js"></script>
+      ```
+    * 打包测试: gulp
+  * 处理css
+    * 创建less/css文件
+      * src/css/test1.css
+        ```
+        #div1 {
+          width: 100px;
+          height: 100px;
+          background: green;
+        }
+        ```
+      * src/css/test2.css
+        ```
+        #div2 {
+          width: 200px;
+          height: 200px;
+          background: blue;
+        }
+        ```
+      * src/less/test3.less
+        ```
+        @base: yellow;
+        .index1 { color: @base; }
+        .index2 { color: green; }
+        ```
+    * 下载插件:
+      ```
+      npm install gulp-less gulp-clean-css --save-dev 
+      ```
+    * 配置编码
+      ```
+      var less = require('gulp-less');
+      var cleanCSS = require('gulp-clean-css');
+      
+      //less处理任务
+      gulp.task('lessTask', function () {
+        return gulp.src('src/less/*.less')
+            .pipe(less()) 
+            
+            .pipe(gulp.dest('src/css'));
+      })
+      //css处理任务, 指定依赖的任务
+      gulp.task('cssTask',['lessTask'], function () {
+      
+        return gulp.src('src/css/*.css')
+            .pipe(concat('built.css'))
+            .pipe(gulp.dest('dist/css'))
+            .pipe(rename({suffix: '.min'}))
+            .pipe(cleanCSS({compatibility: 'ie8'}))
+            .pipe(gulp.dest('dist/css'));
+      });
+      
+      gulp.task('default', ['minifyjs', 'cssTask']);
+      ```
+    * 页面引入css浏览测试 : index.html
+      ```
+      <link rel="stylesheet" href="dist/css/built.min.css">
+      <div id="div1" class="index1">div1111111</div>
+      <div id="div2" class="index2">div2222222</div>
+      ```
+    * 打包测试: gulp
+  * 处理html
+      * 下载插件:
+        ```
+        npm install gulp-htmlmin --save-dev
+        ```
+      * 配置编码
+        ```
+        var htmlmin = require('gulp-htmlmin');
+        //压缩html任务
+        gulp.task('htmlMinify', function() {
+            return gulp.src('index.html')
+                .pipe(htmlmin({collapseWhitespace: true}))
+                .pipe(gulp.dest('dist'));
+        });
+        gulp.task('default', ['minifyjs', 'cssTask', 'htmlMinify']);
+        ```
+      * 修改页面引入
+        ```
+        <link rel="stylesheet" href="css/built.min.css">
+        <script type="text/javascript" src="js/built.min.js"></script>
+        ```
+      * 打包测试: gulp    
+  * 自动编译
+    * 下载插件
+      ```
+      npm install gulp-livereload --save-dev
+      ```
+    * 配置编码:
+      ```
+      var livereload = require('gulp-livereload');
+                
+      //所有的pipe
+      .pipe(livereload())
+      
+      gulp.task('watch', ['default'], function () {    
+        //开启监视
+        livereload.listen();
+        //监视指定的文件, 并指定对应的处理任务
+        gulp.watch('src/js/*.js', ['minifyjs'])
+        gulp.watch(['src/css/*.css','src/less/*.less'], ['cssTask','lessTask']);
+      });
+      ```
+      
+    * 热加载(实时加载)
+        * 下载插件：gulp-connect
+        ```
+        1、 npm install gulp-connect --save-dev ; npm install open --save-dev 
+        2、 注册 热加载的任务 server，注意依赖build任务 
+        3、注册热加载的任务
+            var connect = require('gulp-connect');
+            
+            //所有的pipe
+            .pipe(connect.reload())
+            
+            //配置加载的选项
+            connect.server({
+                  root : 'dist/',//监视的源目标文件路径
+                  livereload : true,//是否实时刷新
+                  port : 5000//开启端口号
+             });
+             // 自动开启链接
+             open('http://localhost:5000');//npm install open --save-dev
+             // 监视目标文件
+            gulp.watch('src/js/*.js', ['js']);
+            gulp.watch(['src/css/*.css', 'src/css/*.less'], ['cssMin', 'less']);
+        ```
+    
+    * 扩展
+        * 打包加载gulp插件
+        * 前提：将插件下载好。
+        * 下载打包插件： gulp-load-plugins
+        * npm install gulp-load-plugins --save-dev
+        * 引入： var $ = require('gulp-load-plugins')();！！！引入的插件是个方法，必须记住调用。
+        * 神来之笔：其他的插件不用再引入了
+        * 使用方法：
+            ```
+            * 所有的插件用 $ 引出，其他插件的方法名统一为插件的功能名字(即插件名字的最后一部分)：如：concat,connect,cssmin...
+            gulp.task('less', function () {
+            return gulp.src('src/less/*.less')
+             .pipe($.less())//将less转换为less
+             .pipe(gulp.dest('src/css/'))//将转换为less的文件输出到src下
+             .pipe($.livereload())//实时刷新
+             .pipe($.connect.reload())
+         });
+            ```
 
-借助github托管项目代码
 
-## 2.2基本概念
+            ```
+```
 
-#### <font style='color:red'>仓库（Repository）</font>
+2.Gulpfile.js文件配置：
 
-仓库用来存放项目代码，每个项目对应一个仓库，多个开元项目则有多个仓库
+```
+var gulp = require('glup');
+// var concat = require('glup-concat');
+// var uglify = require('glup-uglify');
+// var rename = require('glup-rename');
+// var less = require('glup-less');
+// var cleanCss = require('glup-clean-css');
+// var htmlmin = require('gulp-htmlmin');
+// var livereload = require('gulp-livereload');
+// var connect = require('gulp-connect');
+// var open = require('open');
 
-#### <font style='color:red'>收藏（star）</font>
+var $ = require('gulp-load-plugins')(); //打包加载gulp插件,即上面的插件都不用自己导入。
 
-收藏项目，方便下次查看
+// 注册合并压缩js的任务
+gulp.task('js', function () {
+    return gulp.src('src/js/**/*.js')  //可以深度遍历
+        .pipe($.concat('build.js'))      //临时合并文件，并指定文件名为build.js
+        .pipe(gulp.dest('dist/js/'))   //指定输出的目录，到本地目录
+        .pipe($.uglify())                //压缩文件
+        .pipe($.rename({suffix: '.min'}))//重命名
+        .pipe(gulp.dest('dist/js'))    //再重新输出
+        // .pipe(livereload())
+        .pipe($.connect.reload())
+});
 
-#### <font style="color:red"> 复制克隆项目（fork）</font> 
+// 注册转换less的任务
+gulp.task('less', function () {
+    return gulp.src('src/less/*.less')
+        .pipe($.less())                  //编译less文件为css文件
+        .pipe(gulp.dest('src/css'))   //输出文件
+        // .pipe(livereload())
+        .pipe($.connect.reload())
+});
 
- 
+//css处理任务, 指定依赖的任务
+gulp.task('css', ['less'], function () {
+    return gulp.src('src/css/*.css')
+        .pipe($.concat('built.css'))
+        .pipe(gulp.dest('dist/css'))
+        .pipe($.rename({suffix: '.min'}))
+        .pipe($.cleanCss({compatibility: 'ie8'}))
+        .pipe(gulp.dest('dist/css'))
+        // .pipe(livereload())
+        .pipe($.connect.reload())
+});
 
-![image-20210220210824167](https://i.loli.net/2021/02/20/PH8cCB9TmjDh21a.png)
+//压缩html任务
+gulp.task('html', function () {
+    return gulp.src('index.html')
+        .pipe($.htmlmin({collapseWhitespace: true}))
+        .pipe(gulp.dest('dist/'))
+        // .pipe(livereload())
+        .pipe($.connect.reload())
+});
 
-<font style='color:red'>脚下留心：</font>该fork的项目时独立存在的
+//注册监视任务（半自动）
+gulp.task('watch', ['default'], function () {
+    //开启监视
+    livereload.listen();
+    //监视指定的文件, 并指定对应的处理任务
+    gulp.watch('src/js/*.js', ['js'])
+    gulp.watch(['src/css/*.css', 'src/less/*.less'], ['css', 'less']);
+});
 
-#### <font style='color:red'>发送请求（Pull Request）</font>
+//注册监视任务（全自动）
+glup.task('server', ['default'], function () {
+    //配置服务器的选项
+    $.connect.server({
+        root: 'dist/',//监视的源目标文件路径
+        livereload: true,//是否实时刷新
+        port: 5000//开启端口号
+    });
+    // 自动开启链接
+    open('http://localhost:5000');//npm install open --save-dev
+    // 监视目标文件
+    gulp.watch('src/js/*.js', ['js']);
+    gulp.watch(['src/css/*.css', 'src/css/*.less'], ['css', 'less']);
+});
 
+//注册默认任务（异步执行的）
+gulp.task('default', ['js', 'less', 'css', 'html']);
 
+```
 
-![image-20210220212357333](https://i.loli.net/2021/02/20/UsKfkjA9Rv85tiB.png)
-
-#### <font style='color:red'>关注（watch）</font>
-
-关注项目，当项目更新可以接受通知
-
-#### <font style='color:red'>事务卡片（issue）</font>
-
-发现代码bug，但是目前没有成型代码，需要讨论时用
-
-![image-20210220212806537](https://i.loli.net/2021/02/20/NVakCy16l9wScRL.png)
-
-![image-20210220212928534](https://i.loli.net/2021/02/20/Ih3fvmTWoB9EdCK.png)
-
-## 2.3注册github账号
-
-官方网址  [github.com](github.com)
-
-脚下留心
-
-1. 因为github在国外服务器所以访问比较慢或者无法访问，需要翻墙（shacowsocks）
-
-## 2.4建立仓库/创建新项目
-
+```

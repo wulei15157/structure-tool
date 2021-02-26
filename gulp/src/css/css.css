@@ -1,0 +1,13 @@
+.wulei {
+  width: 150px;
+  height: 150px;
+  font-size: 12px;
+  background: red;
+  color: red;
+  position: relative;
+}
+div {
+  background: grey;
+  color: red;
+  font-size: 12px;
+}
