@@ -1,1 +1,10 @@
-.wulei{color:red;background: blue}
+.wulei{color:red;background: blue;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex: 1;
+  flex: 1;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+  background: red;
+  
+}

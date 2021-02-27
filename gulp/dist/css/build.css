@@ -9,10 +9,27 @@
 div {
   background: grey;
   color: red;
-  font-size: 12px;
+  font-size: 1rem;
 }
 
-.wulei{color:red;background: blue}
+.wulei{color:red;background: blue;
+  display: -webkit-flex;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex: 1;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-flex-direction: row;
+  background: red;
+  
+}
+
 .xiaowu{ border-color: red; background: red}
 #div {
   width: 100px;

@@ -1,0 +1,1 @@
+(()=>{function n(n,o){return n+o}document.write("entry.js is working"),n(1,2),console.log(n(1,2))})();
