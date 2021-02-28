@@ -4,3 +4,6 @@
           });
           console.log(arr);
         })();
+        const aaa = '测试';
+        console.log(aaa)
+ 
